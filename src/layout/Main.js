@@ -1,12 +1,15 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {Movies} from "../components/Movies";
 import {Search} from "../components/Search";
 import {Preloader} from "../components/Preloader";
 
 const API_KEY = process.env.REACT_APP_API_KEY ;
 
-class Main extends React.Component{
-    constructor(props) {
+function Main (){
+    const [movies, setMovies] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+  /*  constructor(props) {
         super(props);
         this.state = {
             movies: [],
@@ -19,41 +22,42 @@ class Main extends React.Component{
 
     }
 
+*/
+
+    const handleSearch = (str,type = 'all') => {
+        setLoading(true);
 
 
-  componentDidMount(){
-        fetch(`https://www.omdbapi.com/?apikey=${API_KEY}`)
+        fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${str}${type !== 'all' ? `&type=${type}` : ''}`)
             .then(response => response.json())
-            .then(data => this.setState({movies: data.Search, loading: false,}))
+            .then(data => {
+                setMovies(data.Search);
+                setLoading(false);
+            })
             .catch((error) => {
                 console.log(error);
-                this.setState({loading: false});
+                setLoading(false);
+            });
+
+    }
+
+    useEffect( () => {
+        fetch(`https://www.omdbapi.com/?apikey=${API_KEY}`)
+            .then(response => response.json())
+            .then(data => {
+                    setMovies(data.Search);
+                    setLoading(false);
             })
-    }
-
-
-
-    handleSearch(str,type = 'all') {
-        this.setState({loading: true});
-
-
-            fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${str}${type !== 'all' ? `&type=${type}` : ''}`)
-                .then(response => response.json())
-                .then(data => this.setState({movies: data.Search, loading: false}))
-                .catch((error) => {
+            .catch((error) => {
                     console.log(error);
-                    this.setState({loading: false})
-                });
+                    setLoading(false);
+            })
+    },[])
 
-    }
-
-
-    render(){
-        const {movies, loading} = this.state;
 
         return(
             <main className="container content">
-                <Search handleSearch = {this.handleSearch} />
+                <Search handleSearch = {handleSearch} />
 
                 {
                     loading ?
@@ -63,7 +67,7 @@ class Main extends React.Component{
                 }
             </main>
         )
-    }
+
 
 
 }

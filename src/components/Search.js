@@ -1,39 +1,26 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-class Search extends React.Component{
-    constructor(props) {
-        super(props);
+function Search (props){
+    const {handleSearch = Function.prototype,} = props;
+    const [search, setSearch] = useState('');
+    const [type, setType] = useState('all');
 
-       this.state = {
-            search: '',
-            type: 'all',
-        }
 
-        this.handleKey = this.handleKey.bind(this);
-       this.handleFilter = this.handleFilter.bind(this);
 
-    }
 
-    handleKey(event){
+    const handleKey = (event) => {
         if(event.key === "Enter")
         {
-            this.props.handleSearch(this.state.search, this.state.type);
+            handleSearch(search, type);
         }
     }
 
-    handleFilter(event){
-        this.setState(() =>
-            ({type: event.target.dataset.type}), () => {
-                this.props.handleSearch(this.state.search, this.state.type)
-            }
-
-
-        );
+    const handleFilter = (event) => {
+        setType(event.target.dataset.type );
+        handleSearch(search, event.target.dataset.type);
     }
 
-    render(){
         return(
-
 
                 <div className="row">
                     <div className="col s12">
@@ -43,12 +30,12 @@ class Search extends React.Component{
                                 id="email_inline"
                                 type="search"
                                 className="validate"
-                                value = {this.state.search}
-                                onChange={(e) => this.setState({search: e.target.value, type: e.target.dataset.type})}
-                                onKeyDown={this.handleKey}
+                                value = {search}
+                                onChange={(e) => setSearch( e.target.value)}
+                                onKeyDown={handleKey}
                             />
                             <button className='btn search-btn'
-                                    onClick={() => this.props.handleSearch(this.state.search, this.state.type)}>
+                                    onClick={() => handleSearch(search, type)}>
                                 Search
                             </button>
 
@@ -57,8 +44,8 @@ class Search extends React.Component{
                                     <input name="type"
                                            className="with-gap"
                                            type="radio"
-                                           checked={this.state.type === 'all'}
-                                           onChange={this.handleFilter}
+                                           checked={type === 'all'}
+                                           onChange={handleFilter}
                                            data-type='all'
                                     />
                                     <span>All</span>
@@ -69,8 +56,8 @@ class Search extends React.Component{
                                            className="with-gap"
                                            type="radio"
                                            data-type="movie"
-                                           checked={this.state.type === 'movie'}
-                                           onChange={this.handleFilter}
+                                           checked={type === 'movie'}
+                                           onChange={handleFilter}
                                     />
                                     <span>Movies only</span>
                                 </label>
@@ -80,8 +67,8 @@ class Search extends React.Component{
                                            className="with-gap"
                                            type="radio"
                                            data-type="series"
-                                           checked={this.state.type === 'series'}
-                                           onChange={this.handleFilter}
+                                           checked={type === 'series'}
+                                           onChange={handleFilter}
                                     />
                                     <span>Series only</span>
                                 </label>
@@ -94,7 +81,7 @@ class Search extends React.Component{
                 </div>
 
         )
-    }
+
 }
 
 export {Search};
